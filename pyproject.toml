@@ -1,0 +1,8 @@
+[project]
+name="github-repo-chat-rag"
+version="0.1.0"
+dependencies=[
+    "fastapi",
+    "gitingest>=0.3.1",
+    "uvicorn[standard]",
+]
