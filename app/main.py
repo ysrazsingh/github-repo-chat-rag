@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.layers._0.schema import RepoInput
 from app.layers._0.ingestion import run_ingest
-
+from app.layers._1.processing import process_gitingest_output
 app = FastAPI()
 
 @app.get("/")
@@ -11,15 +11,18 @@ def index():
 
 @app.post("/gitingest")
 async def ingest(input: RepoInput):
-    summary, tree, content = await run_ingest(input)
-    full_context = f"{summary}\n\n{tree}\n\n{content}"
-    
+    # summary, tree, content = await run_ingest(input)
+    # full_context = f"{summary}\n\n{tree}\n\n{content}"
+    with open("output.txt", "r") as file:
+        content = file.read()
+
+    chunks = process_gitingest_output(content)
+
     return {
         "repo": input.repo_url,
-        "summary": summary,
-        "tree": tree,
-        "content": content,
+        "total_chunks": len(chunks),
+        "chunks": chunks[:100],
         "meta": {
-            "tokens_estimate": len(full_context) // 4
+            "deduplicated": True
         }
     }
